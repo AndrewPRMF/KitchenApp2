@@ -173,6 +173,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a202
 </div>
 
 <script>
+// Check for ?data= in URL on page load
+window.addEventListener('load', function(){
+  try{
+    var params=new URLSearchParams(window.location.search);
+    var raw=params.get('data');
+    if(raw){
+      var data=JSON.parse(decodeURIComponent(raw));
+      showKitchen(data);
+    }
+  }catch(e){ /* no data param, show home screen normally */ }
+});
+
 var stream=null, scanning=false, animFrame=null, frameCount=0;
 var SCAN_INTERVAL=3; // process every 3rd frame for performance
 
