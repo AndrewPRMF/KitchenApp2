@@ -25,131 +25,464 @@ header p{font-size:13px;opacity:.85;margin-top:4px}
 .card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:24px;margin-bottom:20px}
 .card h2{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:16px}
 .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.method-btn{border:2px solid #e2e8f0;border-radius:12px;padding:16px 10px;text-align:center;cursor:pointer;background:#fff}
-.method-btn.selected,.method-btn:hover{border-color:#1a56db;background:#eff6ff}
-.method-btn .icon{font-size:28px;margin-bottom:8px}
-.method-btn .label{font-size:13px;font-weight:600;color:#1e293b}
-.method-btn .tag{font-size:10px;color:#64748b;margin-top:4px;background:#f1f5f9;border-radius:20px;padding:2px 8px;display:inline-block}
-.method-panel{display:none}.method-panel.active{display:block}
-label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
-input[type=text],input[type=number],textarea,input[type=password]{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;color:#1e293b;outline:none;font-family:inherit}
-input:focus,textarea:focus{border-color:#1a56db}
-textarea{resize:vertical;min-height:80px}
+.method-btn{border:2px solid #e2e8f0;border-radius:12px;padding:16px 10px;text-align:center;cursor:pointer;background:#fff;transition:all .2s}
+.method-btn:hover,.method-btn.selected{border-color:#1a56db;background:#eff6ff}
+.method-icon{font-size:28px;margin-bottom:8px}
+.method-label{font-size:13px;font-weight:600;color:#1e293b}
+.method-tag{font-size:10px;color:#64748b;margin-top:4px;background:#f1f5f9;border-radius:20px;padding:2px 8px;display:inline-block}
+.panel{display:none}
+.panel.active{display:block}
 .field-group{margin-bottom:16px}
-.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.upload-area{border:2px dashed #cbd5e1;border-radius:10px;padding:32px;text-align:center;cursor:pointer;color:#64748b}
+.field-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.field-group input,.field-group textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;color:#1e293b;outline:none;font-family:inherit}
+.field-group input:focus,.field-group textarea:focus{border-color:#1a56db}
+.field-group textarea{resize:vertical;min-height:80px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.upload-area{border:2px dashed #cbd5e1;border-radius:10px;padding:32px;text-align:center;cursor:pointer;color:#64748b;transition:all .2s}
 .upload-area:hover{border-color:#1a56db;background:#eff6ff}
-.upload-area input{display:none}
-.btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-sm{padding:7px 14px;font-size:13px}
 .btn-outline{background:#fff;border:1.5px solid #1a56db;color:#1a56db}
-.btn-sm{padding:8px 16px;font-size:13px}
 .btn-green{background:linear-gradient(135deg,#10b981,#065f46)}
 .btn-red{background:linear-gradient(135deg,#ef4444,#991b1b)}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.top-actions{display:flex;justify-content:flex-end;margin-bottom:14px}
 .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-word{background:#e0f2fe;color:#0369a1}
 .badge-ai{background:#fce7f3;color:#9d174d}
 .badge-manual{background:#dcfce7;color:#166534}
-.hidden{display:none}
-.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px}
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:14px}
 .alert-error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
 .alert-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
-.qr-wrap{text-align:center;padding:20px}
-.qr-ref{font-size:18px;font-weight:700;color:#1a56db;background:#eff6ff;border-radius:8px;padding:8px 20px;display:inline-block;margin-bottom:20px}
-#qrcode{display:inline-block;padding:16px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.1)}
-.url-preview{font-size:11px;color:#64748b;word-break:break-all;margin:16px 0;background:#f8fafc;padding:10px;border-radius:8px}
-.summary-table{width:100%;border-collapse:collapse;font-size:13px}
+.hidden{display:none}
+.qr-center{text-align:center;padding:10px 0 20px}
+.qr-ref-badge{font-size:18px;font-weight:700;color:#1a56db;background:#eff6ff;border-radius:8px;padding:8px 20px;display:inline-block;margin-bottom:18px}
+#qrcode{display:inline-block;padding:14px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.url-preview{font-size:11px;color:#64748b;word-break:break-all;margin:14px 0 0;background:#f8fafc;padding:10px;border-radius:8px}
+.summary-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
 .summary-table td{padding:8px 12px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top}
-.summary-table td:first-child{font-weight:600;color:#64748b;width:38%}
-.collapsible-btn{background:none;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;color:#64748b;margin-top:12px}
-.collapsible-content{display:none;margin-top:8px;font-size:11px;word-break:break-all;background:#f8fafc;padding:10px;border-radius:8px;color:#64748b}
-.template-btn-wrap{text-align:right;margin-bottom:16px}
-@media(max-width:600px){.method-grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+.summary-table td:first-child{font-weight:600;color:#64748b;width:36%}
+.collapse-btn{background:none;border:1px solid #e2e8f0;border-radius:8px;padding:7px 13px;font-size:12px;cursor:pointer;color:#64748b;margin-top:12px}
+.collapse-content{display:none;margin-top:8px;font-size:11px;word-break:break-all;background:#f8fafc;padding:10px;border-radius:8px;color:#64748b}
+@media(max-width:600px){.method-grid{grid-template-columns:1fr}.row3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><h1>🍳 Kitchen QR Generator</h1><p>Create a scannable QR code for any kitchen order</p></header>
+<header>
+  <h1>🍳 Kitchen QR Generator</h1>
+  <p>Create a scannable QR code for any kitchen order</p>
+</header>
 <div class="container">
-<div class="progress">
-<div class="step active" id="prog1"><div class="step-num">1</div>Data Entry</div>
-<div class="step-line" id="line1"></div>
-<div class="step" id="prog2"><div class="step-num">2</div>Review</div>
-<div class="step-line" id="line2"></div>
-<div class="step" id="prog3"><div class="step-num">3</div>QR Output</div>
+
+  <!-- Progress bar -->
+  <div class="progress">
+    <div class="step active" id="prog1"><div class="step-num">1</div>Data Entry</div>
+    <div class="step-line" id="line1"></div>
+    <div class="step" id="prog2"><div class="step-num">2</div>Review</div>
+    <div class="step-line" id="line2"></div>
+    <div class="step" id="prog3"><div class="step-num">3</div>QR Output</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <div class="card">
+      <h2>Step 1 — Choose Input Method</h2>
+      <div class="method-grid" style="grid-template-columns:1fr 1fr">
+        <div class="method-btn selected" id="mManual" onclick="selectMethod('manual')">
+          <div class="method-icon">✏️</div>
+          <div class="method-label">Manual Entry</div>
+          <div class="method-tag">No upload</div>
+        </div>
+        <div class="method-btn" id="mWord" onclick="selectMethod('word')">
+          <div class="method-icon">📄</div>
+          <div class="method-label">Word Form</div>
+          <div class="method-tag">Upload .docx</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn btn-outline btn-sm" onclick="downloadTemplate()">⬇ Download Word Template</button>
+      </div>
+
+      <!-- Word panel -->
+      <div class="panel active" id="panelWord">
+        <div id="alertWord"></div>
+        <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">Upload your completed Word form (.docx)</label>
+        <div class="upload-area" onclick="document.getElementById('fileWord').click()">
+          <div style="font-size:36px;margin-bottom:8px">📂</div>
+          <div style="font-weight:600;color:#374151">Click to upload or drag &amp; drop</div>
+          <div style="font-size:12px;margin-top:4px">.docx files only</div>
+          <input type="file" id="fileWord" accept=".docx" style="display:none" onchange="handleWordFile(this.files[0])">
+        </div>
+      </div>
+
+      <!-- Manual panel -->
+      <div class="panel" id="panelManual">
+        <div id="manualForm"></div>
+        <div class="actions">
+          <button class="btn" onclick="submitManual()">Next — Review Data →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="hidden">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="margin:0">Step 2 — Review &amp; Edit</h2>
+        <span id="sourceBadge" class="badge"></span>
+      </div>
+      <div id="reviewForm"></div>
+      <div class="actions">
+        <button class="btn btn-outline" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-green" onclick="doGenerateQR()">Generate QR Code →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3" class="hidden">
+    <div class="card">
+      <h2>Step 3 — QR Code</h2>
+      <div class="qr-center">
+        <div class="qr-ref-badge" id="qrRef"></div>
+        <div id="qrcode"></div>
+        <div class="url-preview" id="urlPreview"></div>
+      </div>
+      <div class="actions" style="justify-content:center">
+        <button class="btn" onclick="doPrint()">🖨 Print</button>
+        <button class="btn btn-outline" onclick="doSavePNG()">💾 Save PNG</button>
+        <button class="btn btn-red" onclick="doNewKitchen()">+ New Kitchen</button>
+      </div>
+      <div style="margin-top:20px">
+        <h2 style="font-size:14px;margin-bottom:10px">Order Summary</h2>
+        <table class="summary-table" id="summaryTable"></table>
+      </div>
+      <button class="collapse-btn" onclick="toggleFullUrl()">Show full encoded URL</button>
+      <div class="collapse-content" id="fullUrl"></div>
+    </div>
+  </div>
+
 </div>
-<div id="step1"><div class="card"><h2>Step 1 — Choose Input Method</h2>
-<div class="method-grid">
-<div class="method-btn selected" onclick="selectMethod('word')" id="mWord"><div class="icon">📄</div><div class="label">Word Form</div><div class="tag">No AI required</div></div>
-<div class="method-btn" onclick="selectMethod('pdf')" id="mPdf"><div class="icon">🤖</div><div class="label">Scanned PDF</div><div class="tag">Uses AI</div></div>
-<div class="method-btn" onclick="selectMethod('manual')" id="mManual"><div class="icon">✏️</div><div class="label">Manual Entry</div><div class="tag">No upload</div></div>
-</div>
-<div class="template-btn-wrap"><button class="btn btn-outline btn-sm" onclick="downloadTemplate()">⬇ Download Word Template</button></div>
-<div class="method-panel active" id="panelWord"><div id="alertWord"></div>
-<label>Upload completed Word form (.docx)</label>
-<div class="upload-area" onclick="document.getElementById('fileWord').click()">
-<div style="font-size:36px;margin-bottom:8px">📂</div>
-<div style="font-weight:600">Click to upload or drag &amp; drop</div>
-<div style="font-size:12px;margin-top:4px">.docx files only</div>
-<input type="file" id="fileWord" accept=".docx" onchange="handleWordFile(this.files[0])">
-</div></div>
-<div class="method-panel" id="panelPdf"><div id="alertPdf"></div>
-<div class="field-group"><label>Anthropic API Key</label><input type="password" id="apiKey" placeholder="sk-ant-..."></div>
-<label>Upload scanned PDF</label>
-<div class="upload-area" onclick="document.getElementById('filePdf').click()">
-<div style="font-size:36px;margin-bottom:8px">🔍</div>
-<div style="font-weight:600">Click to upload PDF</div>
-<input type="file" id="filePdf" accept=".pdf" onchange="handlePdfFile(this.files[0])">
-</div>
-<div id="aiLoading" class="hidden" style="text-align:center;padding:20px;color:#1a56db">⏳ Extracting with AI...</div>
-</div>
-<div class="method-panel" id="panelManual"><div id="formManual"></div>
-<div class="actions"><button class="btn" onclick="submitManual()">Next — Review Data →</button></div>
-</div></div></div>
-<div id="step2" class="hidden"><div class="card">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-<h2 style="margin:0">Step 2 — Review &amp; Edit</h2><span id="sourceBadge" class="badge"></span></div>
-<div id="reviewForm"></div>
-<div class="actions"><button class="btn btn-outline" onclick="goStep(1)">← Back</button><button class="btn btn-green" onclick="generateQR()">Generate QR Code →</button></div>
-</div></div>
-<div id="step3" class="hidden"><div class="card"><h2>Step 3 — QR Code</h2>
-<div class="qr-wrap"><div class="qr-ref" id="qrRef"></div><div id="qrcode"></div><div class="url-preview" id="urlPreview"></div></div>
-<div class="actions" style="justify-content:center">
-<button class="btn" onclick="printQR()">🖨 Print</button>
-<button class="btn btn-outline" onclick="saveQR()">💾 Save PNG</button>
-<button class="btn btn-red" onclick="newKitchen()">+ New Kitchen</button>
-</div>
-<div class="card" style="margin-top:20px;box-shadow:none;border:1px solid #e2e8f0"><h2 style="font-size:14px">Order Summary</h2><table class="summary-table" id="summaryTable"></table></div>
-<button class="collapsible-btn" onclick="toggleUrl()">Show full encoded URL</button>
-<div class="collapsible-content" id="fullUrl"></div>
-</div></div></div>
 <script>
-const FIELDS=[
-{key:"ref",label:"Reference / Title",type:"text",placeholder:"e.g. KIT-2024-001"},
-{key:"carcase",label:"Carcase Colour",type:"text",placeholder:"e.g. White"},
-{key:"floor",label:"Floor Cabinets",type:"number",placeholder:"0"},
-{key:"wall",label:"Wall Cabinets",type:"number",placeholder:"0"},
-{key:"tall",label:"Tall Cabinets",type:"number",placeholder:"0"},
-{key:"doorRange",label:"Door Range",type:"text",placeholder:"e.g. Shaker"},
-{key:"doorColour",label:"Door Colour",type:"text",placeholder:"e.g. Ivory / RAL 9010"},
-{key:"appliances",label:"Appliances",type:"textarea",placeholder:"e.g. Oven; Hob; Extractor"},
-{key:"details",label:"Details",type:"textarea",placeholder:"Worktops, splashbacks, handles..."}
+var kitchenData = {};
+var dataSource = 'manual';
+
+var FIELDS = [
+  {key:'ref',       label:'Reference / Title', type:'text',     ph:'e.g. KIT-2024-001'},
+  {key:'carcase',   label:'Carcase Colour',    type:'text',     ph:'e.g. White'},
+  {key:'floor',     label:'Floor Cabinets',    type:'number',   ph:'0'},
+  {key:'wall',      label:'Wall Cabinets',     type:'number',   ph:'0'},
+  {key:'tall',      label:'Tall Cabinets',     type:'number',   ph:'0'},
+  {key:'doorRange', label:'Door Range',        type:'text',     ph:'e.g. Shaker'},
+  {key:'doorColour',label:'Door Colour',       type:'text',     ph:'e.g. Ivory / RAL 9010'},
+  {key:'appliances',label:'Appliances',        type:'textarea', ph:'e.g. Oven; Hob; Extractor; Dishwasher'},
+  {key:'details',   label:'Details',           type:'textarea', ph:'Worktops, splashbacks, handles, lighting etc.'}
 ];
-let currentMethod="word",kitchenData={},dataSource="word";
-function selectMethod(m){currentMethod=m;["word","pdf","manual"].forEach(x=>{document.getElementById("m"+x[0].toUpperCase()+x.slice(1)).classList.toggle("selected",x===m);document.getElementById("panel"+x[0].toUpperCase()+x.slice(1)).classList.toggle("active",x===m);});if(m==="manual")buildManualForm();}
-function buildManualForm(pre={}){let h="";const rk=["floor","wall","tall"];let dr=false;FIELDS.forEach(f=>{if(rk.includes(f.key)&&!dr){h+='<div class="row">';rk.forEach(k=>{const rf=FIELDS.find(x=>x.key===k);h+='<div class="field-group"><label>'+rf.label+'</label><input type="number" id="m_'+k+'" value="'+(pre[k]||"'")+"'></div>";});h+="</div>";dr=true;return;}if(rk.includes(f.key))return;if(f.type==="textarea")h+='<div class="field-group"><label>'+f.label+'</label><textarea id="m_'+f.key+'" placeholder="'+f.placeholder+'">'+( pre[f.key]||"")+'</textarea></div>';else h+='<div class="field-group"><label>'+f.label+'</label><input type="text" id="m_'+f.key+'" placeholder="'+f.placeholder+'" value="'+(pre[f.key]||"")+'"></div>';});document.getElementById("formManual").innerHTML=h;}
-function submitManual(){const d={};FIELDS.forEach(f=>{d[f.key]=(document.getElementById("m_"+f.key)||{value:""}).value.trim();});kitchenData=d;dataSource="manual";goStep(2);}
-function goStep(n){[1,2,3].forEach(i=>{document.getElementById("step"+i).classList.toggle("hidden",i!==n);const p=document.getElementById("prog"+i);p.classList.remove("active","done");if(i<n)p.classList.add("done");else if(i===n)p.classList.add("active");if(i<3)document.getElementById("line"+i).classList.toggle("done",i<n);});if(n===2)buildReview();if(n===3)renderQR();}
-function buildReview(){const badges={word:"badge-word",ai:"badge-ai",manual:"badge-manual"};const labs={word:"📄 Word Form",ai:"🤖 AI Extracted",manual:"✏️ Manual"};document.getElementById("sourceBadge").className="badge "+badges[dataSource];document.getElementById("sourceBadge").textContent=labs[dataSource];let h="";const rk=["floor","wall","tall"];let dr=false;FIELDS.forEach(f=>{if(rk.includes(f.key)&&!dr){h+='<div class="row">';rk.forEach(k=>{const rf=FIELDS.find(x=>x.key===k);h+='<div class="field-group"><label>'+rf.label+'</label><input type="number" id="r_'+k+'" value="'+(kitchenData[k]||"")+'"></div>';});h+="</div>";dr=true;return;}if(rk.includes(f.key))return;if(f.type==="textarea")h+='<div class="field-group"><label>'+f.label+'</label><textarea id="r_'+f.key+'">'+( kitchenData[f.key]||"")+'</textarea></div>';else h+='<div class="field-group"><label>'+f.label+'</label><input type="text" id="r_'+f.key+'" value="'+(kitchenData[f.key]||"")+'"></div>';});document.getElementById("reviewForm").innerHTML=h;}
-function collectReview(){const d={};FIELDS.forEach(f=>{const el=document.getElementById("r_"+f.key);if(el)d[f.key]=el.value.trim();});return d;}
-function generateQR(){kitchenData=collectReview();goStep(3);}
-function renderQR(){const json=JSON.stringify(kitchenData);const url="https://andrewprmf.github.io/KitchenApp2/Kitchen_ViewerCP.html?data="+encodeURIComponent(json);const len=new TextEncoder().encode(url).length;const ecl=len<1200?"H":len<2000?"Q":len<3000?"M":"L";document.getElementById("qrRef").textContent=kitchenData.ref||"Kitchen Order";document.getElementById("qrcode").innerHTML="";new QRCode(document.getElementById("qrcode"),{text:url,width:220,height:220,correctLevel:QRCode.CorrectLevel[ecl]});document.getElementById("urlPreview").textContent=(url.length>80?url.slice(0,80)+"...":url)+" (EC:"+ecl+")";document.getElementById("fullUrl").textContent=url;const lbl={ref:"Reference",carcase:"Carcase Colour",floor:"Floor Cabinets",wall:"Wall Cabinets",tall:"Tall Cabinets",doorRange:"Door Range",doorColour:"Door Colour",appliances:"Appliances",details:"Details"};let rows="";FIELDS.forEach(f=>{if(kitchenData[f.key])rows+="<tr><td>"+lbl[f.key]+"</td><td>"+kitchenData[f.key].replace(/\n/g,"<br>")+"</td></tr>";});document.getElementById("summaryTable").innerHTML=rows;}
-function toggleUrl(){const c=document.getElementById("fullUrl");c.style.display=c.style.display==="block"?"none":"block";}
-function printQR(){const ref=kitchenData.ref||"Kitchen";const el=document.getElementById("qrcode");const img=el.querySelector("img")||el.querySelector("canvas");const src=img?(img.tagName==="IMG"?img.src:img.toDataURL()):"";const w=window.open("","_blank");w.document.write("<!DOCTYPE html><html><head><title>"+ref+"</title><style>body{font-family:sans-serif;padding:20px}h2{color:#1a56db}img{display:block;margin:16px auto}table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 10px;border-bottom:1px solid #eee}td:first-child{font-weight:600;color:#64748b;width:38%}</style></head><body><h2>"+ref+"</h2><img src='"+src+"' width='200'><table>"+document.getElementById("summaryTable").innerHTML+"</table><scr"+"ipt>window.print();</scr"+"ipt></body></html>");w.document.close();}
-function saveQR(){const el=document.getElementById("qrcode");const c=el.querySelector("canvas");const src=c?c.toDataURL("image/png"):(el.querySelector("img")||{src:""}).src;if(!src){alert("QR not ready");return;}const a=document.createElement("a");a.href=src;a.download=(kitchenData.ref||"kitchen")+"-qr.png";a.click();}
-function newKitchen(){kitchenData={};dataSource="word";selectMethod("word");goStep(1);}
-async function handleWordFile(file){if(!file)return;const ae=document.getElementById("alertWord");ae.innerHTML='<div class="alert alert-info">⏳ Reading...</div>';try{const zip=await JSZip.loadAsync(await file.arrayBuffer());const doc=(new DOMParser()).parseFromString(await zip.file("word/document.xml").async("string"),"application/xml");const map={Reference:"ref",Title:"ref",Carcase_colour:"carcase",Carcase_Colour:"carcase",Floor_cabinets:"floor",Floor_Cabinets:"floor",Wall_Cabinets:"wall",Wall_cabinets:"wall",Tall_Cabinets:"tall",Tall_cabinets:"tall",Door_Range:"doorRange",Door_Colour:"doorColour",Door_colour:"doorColour",Appliances:"appliances",Other_Details:"details",Details:"details"};const data={};doc.querySelectorAll("sdt").forEach(sdt=>{const t=sdt.querySelector("tag");if(!t)return;const key=map[t.getAttribute("w:val")];if(!key||sdt.querySelector("showingPlcHdr"))return;const txt=[...sdt.querySelectorAll("t")].map(x=>x.textContent).join("");if(txt.trim())data[key]=txt.trim();});if(!Object.keys(data).length){ae.innerHTML='<div class="alert alert-error">No filled fields found.</div>';return;}kitchenData=data;dataSource="word";ae.innerHTML='<div class="alert alert-info">✅ Done!</div>';setTimeout(()=>goStep(2),600);}catch(e){ae.innerHTML='<div class="alert alert-error">❌ '+e.message+"</div>";}}",
-async function handlePdfFile(file){if(!file)return;const key=document.getElementById("apiKey").value.trim();const ae=document.getElementById("alertPdf");if(!key.startsWith("sk-ant-")){ae.innerHTML='<div class="alert alert-error">Enter valid API key.</div>';return;}document.getElementById("aiLoading").classList.remove("hidden");try{const b64=btoa(String.fromCharCode(...new Uint8Array(await file.arrayBuffer())));const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:[{type:"document",source:{type:"base64",media_type:"application/pdf",data:b64}},{type:"text",text:"Extract kitchen data. Return ONLY JSON: {ref,carcase,floor,wall,tall,doorRange,doorColour,appliances,details}"}]}]})});const json=await res.json();document.getElementById("aiLoading").classList.add("hidden");if(!res.ok)throw new Error(json.error?.message||"API error");kitchenData=JSON.parse(json.content.map(c=>c.text||"").join("").replace(/```json|```/g,"").trim());dataSource="ai";ae.innerHTML='<div class="alert alert-info">✅ Done!</div>';setTimeout(()=>goStep(2),600);}catch(e){document.getElementById("aiLoading").classList.add("hidden");document.getElementById("alertPdf").innerHTML='<div class="alert alert-error">❌ '+e.message+"</div>";}}
-async function downloadTemplate(){const Z=new JSZip();const ns="http://schemas.openxmlformats.org/wordprocessingml/2006/main";function sdt(tag,hint){return '<w:sdt><w:sdtPr><w:tag w:val="'+tag+'"/><w:showingPlcHdr/></w:sdtPr><w:sdtContent><w:p><w:r><w:t>'+hint+"</w:t></w:r></w:p></w:sdtContent></w:sdt>";}function row(lbl,tag,hint){return "<w:tr><w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>"+lbl+"</w:t></w:r></w:p></w:tc><w:tc>"+sdt(tag,hint)+"</w:tc></w:tr>";}const fields=[["Reference / Title","Reference","Enter order reference"],["Carcase Colour","Carcase_colour","Enter carcase colour"],["Floor Cabinets","Floor_cabinets","Enter number"],["Wall Cabinets","Wall_Cabinets","Enter number"],["Tall Cabinets","Tall_Cabinets","Enter number"],["Door Range","Door_Range","Enter door style"],["Door Colour","Door_Colour","Enter door colour or RAL"],["Appliances","Appliances","List separated by semicolons"],["Details","Other_Details","Worktops, handles, lighting etc"]];const docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="'+ns+'"><w:body><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Kitchen Order Form</w:t></w:r></w:p><w:p><w:r><w:t>Click each grey field and type to replace it.</w:t></w:r></w:p><w:tbl><w:tblPr><w:tblW w:w="9000" w:type="dxa"/></w:tblPr>'+fields.map(f=>row(...f)).join("")+"</w:tbl><w:sectPr/></w:body></w:document>";Z.file("_rels/.rels","<?xml version='1.0'?><Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='rId1' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument' Target='word/document.xml'/></Relationships>");Z.file("[Content_Types].xml","<?xml version='1.0'?><Types xmlns='http://schemas.openxmlformats.org/package/2006/content-types'><Default Extension='rels' ContentType='application/vnd.openxmlformats-package.relationships+xml'/><Default Extension='xml' ContentType='application/xml'/><Override PartName='/word/document.xml' ContentType='application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'/></Types>");Z.file("word/document.xml",docXml);Z.file("word/_rels/document.xml.rels","<?xml version='1.0'?><Relationships xmlns='http://schemas.openxmlformats.org/package/2006/relationships'><Relationship Id='rId1' Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles' Target='styles.xml'/></Relationships>");Z.file("word/styles.xml","<?xml version='1.0'?><w:styles xmlns:w='"+ns+"'></w:styles>");const blob=await Z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Kitchen_Order_Template.docx";a.click();}
-buildManualForm();
+
+var LABELS = {ref:'Reference',carcase:'Carcase Colour',floor:'Floor Cabinets',wall:'Wall Cabinets',tall:'Tall Cabinets',doorRange:'Door Range',doorColour:'Door Colour',appliances:'Appliances',details:'Details'};
+
+function selectMethod(m) {
+  ['manual','word'].forEach(function(x) {
+    document.getElementById('m' + x.charAt(0).toUpperCase() + x.slice(1)).classList.toggle('selected', x === m);
+    document.getElementById('panel' + x.charAt(0).toUpperCase() + x.slice(1)).classList.toggle('active', x === m);
+  });
+  if (m === 'manual') buildManualForm({});
+}
+
+function buildFormHTML(prefix, prefill) {
+  var h = '';
+  // Reference first
+  var ref = FIELDS.find(function(x){return x.key==='ref';});
+  h += '<div class="field-group"><label>' + ref.label + '</label>';
+  h += '<input type="text" id="' + prefix + 'ref" placeholder="' + ref.ph + '" value="' + (prefill['ref']||'') + '"></div>';
+  // Cabinet counts row
+  h += '<div class="row3">';
+  ['floor','wall','tall'].forEach(function(k) {
+    var f = FIELDS.find(function(x){return x.key===k;});
+    h += '<div class="field-group"><label>' + f.label + '</label>';
+    h += '<input type="number" id="' + prefix + k + '" value="' + (prefill[k]||'') + '" placeholder="' + f.ph + '"></div>';
+  });
+  h += '</div>';
+  // Remaining fields (skip ref and counts)
+  var skip = ['ref','floor','wall','tall'];
+  FIELDS.forEach(function(f) {
+    if (skip.indexOf(f.key) !== -1) return;
+    h += '<div class="field-group"><label>' + f.label + '</label>';
+    if (f.type === 'textarea') {
+      h += '<textarea id="' + prefix + f.key + '" placeholder="' + f.ph + '">' + (prefill[f.key]||'') + '</textarea>';
+    } else {
+      h += '<input type="text" id="' + prefix + f.key + '" placeholder="' + f.ph + '" value="' + (prefill[f.key]||'') + '">';
+    }
+    h += '</div>';
+  });
+  return h;
+}
+
+function collectForm(prefix) {
+  var d = {};
+  FIELDS.forEach(function(f) {
+    var el = document.getElementById(prefix + f.key);
+    if (el) d[f.key] = el.value.trim();
+  });
+  return d;
+}
+
+function buildManualForm(prefill) {
+  document.getElementById('manualForm').innerHTML = buildFormHTML('man_', prefill || {});
+}
+
+function submitManual() {
+  kitchenData = collectForm('man_');
+  dataSource = 'manual';
+  goStep(2);
+}
+
+function goStep(n) {
+  [1,2,3].forEach(function(i) {
+    document.getElementById('step'+i).classList.toggle('hidden', i !== n);
+    var p = document.getElementById('prog'+i);
+    p.classList.remove('active','done');
+    if (i < n) p.classList.add('done');
+    else if (i === n) p.classList.add('active');
+    if (i < 3) document.getElementById('line'+i).classList.toggle('done', i < n);
+  });
+  if (n === 2) buildReviewForm();
+  if (n === 3) renderQR();
+}
+
+function buildReviewForm() {
+  var bl = {word:'badge-word',ai:'badge-ai',manual:'badge-manual'};
+  var lb = {word:'📄 Word Form',ai:'🤖 AI Extracted',manual:'✏️ Manual Entry'};
+  var b = document.getElementById('sourceBadge');
+  b.className = 'badge ' + bl[dataSource];
+  b.textContent = lb[dataSource];
+  document.getElementById('reviewForm').innerHTML = buildFormHTML('rev_', kitchenData);
+}
+
+function doGenerateQR() {
+  kitchenData = collectForm('rev_');
+  goStep(3);
+}
+
+function renderQR() {
+  var json = JSON.stringify(kitchenData);
+  var url = 'https://andrewprmf.github.io/KitchenApp2/Kitchen_ViewerCP.html?data=' + encodeURIComponent(json);
+  var len = new TextEncoder().encode(url).length;
+  var ecl = len < 1200 ? 'H' : len < 2000 ? 'Q' : len < 3000 ? 'M' : 'L';
+
+  document.getElementById('qrRef').textContent = kitchenData.ref || 'Kitchen Order';
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {text:url, width:220, height:220, correctLevel:QRCode.CorrectLevel[ecl]});
+
+  document.getElementById('urlPreview').textContent = (url.length > 90 ? url.slice(0,90)+'...' : url) + '  (EC: '+ecl+')';
+  document.getElementById('fullUrl').textContent = url;
+
+  var rows = '';
+  FIELDS.forEach(function(f) {
+    if (kitchenData[f.key]) {
+      rows += '<tr><td>' + LABELS[f.key] + '</td><td>' + kitchenData[f.key].replace(/\n/g,'<br>') + '</td></tr>';
+    }
+  });
+  document.getElementById('summaryTable').innerHTML = rows;
+}
+
+function toggleFullUrl() {
+  var c = document.getElementById('fullUrl');
+  c.style.display = c.style.display === 'block' ? 'none' : 'block';
+}
+
+function doPrint() {
+  var ref = kitchenData.ref || 'Kitchen';
+  var el = document.getElementById('qrcode');
+  var img = el.querySelector('img') || el.querySelector('canvas');
+  var src = img ? (img.tagName === 'IMG' ? img.src : img.toDataURL()) : '';
+  var tbl = document.getElementById('summaryTable').innerHTML;
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>' + ref + '</title><style>body{font-family:sans-serif;padding:20px}h2{color:#1a56db}img{display:block;margin:16px auto}table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 10px;border-bottom:1px solid #eee}td:first-child{font-weight:600;color:#64748b;width:38%}@media print{button{display:none}}</style></head><body><h2>' + ref + '</h2><img src="' + src + '" width="200"><table>' + tbl + '</table><br><button onclick="window.print()">Print</button></body></html>');
+  w.document.close();
+}
+
+function doSavePNG() {
+  var el = document.getElementById('qrcode');
+  var canvas = el.querySelector('canvas');
+  var src = canvas ? canvas.toDataURL('image/png') : (el.querySelector('img') || {src:''}).src;
+  if (!src) { alert('QR not ready'); return; }
+  var a = document.createElement('a');
+  a.href = src;
+  a.download = (kitchenData.ref || 'kitchen') + '-qr.png';
+  a.click();
+}
+
+function doNewKitchen() {
+  kitchenData = {};
+  dataSource = 'manual';
+  document.getElementById('fileWord').value = '';
+  document.getElementById('alertWord').innerHTML = '';
+  document.getElementById('alertPdf').innerHTML = '';
+  selectMethod('word');
+  goStep(1);
+}
+
+// Word file
+async function handleWordFile(file) {
+  if (!file) return;
+  var ae = document.getElementById('alertWord');
+  ae.innerHTML = '<div class="alert alert-info">⏳ Reading Word file...</div>';
+  try {
+    var zip = await JSZip.loadAsync(await file.arrayBuffer());
+    var xmlStr = await zip.file('word/document.xml').async('string');
+    var doc = new DOMParser().parseFromString(xmlStr, 'application/xml');
+    var tagMap = {
+      Reference:'ref', Title:'ref',
+      Carcase_colour:'carcase', Carcase_Colour:'carcase',
+      Floor_cabinets:'floor', Floor_Cabinets:'floor',
+      Wall_Cabinets:'wall', Wall_cabinets:'wall',
+      Tall_Cabinets:'tall', Tall_cabinets:'tall',
+      Door_Range:'doorRange', Door_range:'doorRange',
+      Door_Colour:'doorColour', Door_colour:'doorColour',
+      Appliances:'appliances',
+      Other_Details:'details', Details:'details'
+    };
+    var data = {};
+    doc.querySelectorAll('sdt').forEach(function(sdt) {
+      var tagEl = sdt.querySelector('tag');
+      if (!tagEl) return;
+      var key = tagMap[tagEl.getAttribute('w:val')];
+      if (!key) return;
+      if (sdt.querySelector('showingPlcHdr')) return;
+      var txt = Array.from(sdt.querySelectorAll('t')).map(function(t){return t.textContent;}).join('');
+      if (txt.trim()) data[key] = txt.trim();
+    });
+    if (!Object.keys(data).length) {
+      ae.innerHTML = '<div class="alert alert-error">No filled fields found. Please complete the template first.</div>';
+      return;
+    }
+    kitchenData = data;
+    dataSource = 'word';
+    ae.innerHTML = '<div class="alert alert-info">✅ Data read successfully!</div>';
+    setTimeout(function(){goStep(2);}, 600);
+  } catch(e) {
+    ae.innerHTML = '<div class="alert alert-error">❌ ' + e.message + '</div>';
+  }
+}
+
+// PDF / AI
+async function handlePdfFile(file) {
+  if (!file) return;
+  var key = document.getElementById('apiKey').value.trim();
+  var ae = document.getElementById('alertPdf');
+  if (!key.startsWith('sk-ant-')) {
+    ae.innerHTML = '<div class="alert alert-error">Please enter a valid Anthropic API key (sk-ant-...)</div>';
+    return;
+  }
+  document.getElementById('aiLoading').classList.remove('hidden');
+  try {
+    var buf = await file.arrayBuffer();
+    var b64 = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{role:'user', content:[
+          {type:'document', source:{type:'base64', media_type:'application/pdf', data:b64}},
+          {type:'text', text:'Extract kitchen order data. Return ONLY a JSON object with keys: ref, carcase, floor, wall, tall, doorRange, doorColour, appliances, details. No markdown, no explanation.'}
+        ]}]
+      })
+    });
+    var json = await res.json();
+    document.getElementById('aiLoading').classList.add('hidden');
+    if (!res.ok) throw new Error(json.error && json.error.message || 'API error');
+    var txt = json.content.map(function(c){return c.text||'';}).join('');
+    kitchenData = JSON.parse(txt.replace(/```json|```/g,'').trim());
+    dataSource = 'ai';
+    ae.innerHTML = '<div class="alert alert-info">✅ AI extracted data successfully!</div>';
+    setTimeout(function(){goStep(2);}, 600);
+  } catch(e) {
+    document.getElementById('aiLoading').classList.add('hidden');
+    document.getElementById('alertPdf').innerHTML = '<div class="alert alert-error">❌ ' + e.message + '</div>';
+  }
+}
+
+// Word template download
+async function downloadTemplate() {
+  var ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  var pkgRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+    '</Relationships>';
+  var wordRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+    '</Relationships>';
+  var ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+    '</Types>';
+  var styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="' + ns + '"></w:styles>';
+
+  var fieldDefs = [
+    {tag:'Reference',    label:'Reference / Title', hint:'Enter kitchen order reference number'},
+    {tag:'Carcase_colour',label:'Carcase Colour',   hint:'Enter interior cabinet colour'},
+    {tag:'Floor_cabinets',label:'Floor Cabinets',   hint:'Enter number of base/floor units'},
+    {tag:'Wall_Cabinets', label:'Wall Cabinets',    hint:'Enter number of wall-mounted units'},
+    {tag:'Tall_Cabinets', label:'Tall Cabinets',    hint:'Enter number of larder/tower units'},
+    {tag:'Door_Range',    label:'Door Range',        hint:'Enter door style/collection name'},
+    {tag:'Door_Colour',   label:'Door Colour',       hint:'Enter door finish or RAL code'},
+    {tag:'Appliances',    label:'Appliances',        hint:'List appliances separated by semicolons'},
+    {tag:'Other_Details', label:'Details',           hint:'Worktops, splashbacks, handles, lighting etc.'}
+  ];
+
+  function makeSdt(tag, hint) {
+    return '<w:sdt>' +
+      '<w:sdtPr><w:tag w:val="' + tag + '"/><w:showingPlcHdr/></w:sdtPr>' +
+      '<w:sdtContent><w:p><w:r><w:t>' + hint + '</w:t></w:r></w:p></w:sdtContent>' +
+      '</w:sdt>';
+  }
+  function makeRow(label, tag, hint) {
+    return '<w:tr>' +
+      '<w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>' + label + '</w:t></w:r></w:p></w:tc>' +
+      '<w:tc>' + makeSdt(tag, hint) + '</w:tc>' +
+      '</w:tr>';
+  }
+
+  var tableRows = fieldDefs.map(function(f){ return makeRow(f.label, f.tag, f.hint); }).join('');
+  var docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:document xmlns:w="' + ns + '"><w:body>' +
+    '<w:p><w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t>Kitchen Order Form</w:t></w:r></w:p>' +
+    '<w:p><w:r><w:t>Click each grey field and type to replace the placeholder text.</w:t></w:r></w:p>' +
+    '<w:p><w:r><w:t></w:t></w:r></w:p>' +
+    '<w:tbl><w:tblPr><w:tblW w:w="9000" w:type="dxa"/></w:tblPr>' +
+    tableRows +
+    '</w:tbl><w:sectPr/></w:body></w:document>';
+
+  var Z = new JSZip();
+  Z.file('_rels/.rels', pkgRels);
+  Z.file('[Content_Types].xml', ct);
+  Z.file('word/document.xml', docXml);
+  Z.file('word/_rels/document.xml.rels', wordRels);
+  Z.file('word/styles.xml', styles);
+
+  var blob = await Z.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Kitchen_Order_Template.docx';
+  a.click();
+}
+
+// Init
+buildManualForm({});
 </script>
-</body></html>
+</body>
+</html>
