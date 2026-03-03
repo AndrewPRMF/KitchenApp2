@@ -105,10 +105,14 @@ header p{font-size:13px;opacity:.85;margin-top:4px}
       </div>
 
       <!-- Word panel -->
-      <div class="panel active" id="panelWord">
+      <div class="panel" id="panelWord">
         <div id="alertWord"></div>
         <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">Upload your completed Word form (.docx)</label>
-        <div class="upload-area" onclick="document.getElementById('fileWord').click()">
+        <div class="upload-area" id="dropZone"
+          onclick="document.getElementById('fileWord').click()"
+          ondragover="event.preventDefault();this.classList.add('dragover')"
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="this.classList.remove('dragover');handleWordFile(event.dataTransfer.files[0])">
           <div style="font-size:36px;margin-bottom:8px">📂</div>
           <div style="font-weight:600;color:#374151">Click to upload or drag &amp; drop</div>
           <div style="font-size:12px;margin-top:4px">.docx files only</div>
@@ -117,7 +121,7 @@ header p{font-size:13px;opacity:.85;margin-top:4px}
       </div>
 
       <!-- Manual panel -->
-      <div class="panel" id="panelManual">
+      <div class="panel active" id="panelManual">
         <div id="manualForm"></div>
         <div class="actions">
           <button class="btn" onclick="submitManual()">Next — Review Data →</button>
@@ -318,10 +322,11 @@ function doSavePNG() {
 function doNewKitchen() {
   kitchenData = {};
   dataSource = 'manual';
-  document.getElementById('fileWord').value = '';
-  document.getElementById('alertWord').innerHTML = '';
-  document.getElementById('alertPdf').innerHTML = '';
-  selectMethod('word');
+  var fw = document.getElementById('fileWord');
+  if (fw) fw.value = '';
+  var aw = document.getElementById('alertWord');
+  if (aw) aw.innerHTML = '';
+  selectMethod('manual');
   goStep(1);
 }
 
