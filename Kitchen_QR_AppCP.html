@@ -174,15 +174,15 @@ var kitchenData = {};
 var dataSource = 'manual';
 
 var FIELDS = [
-  {key:'ref',       label:'Reference / Title', type:'text',     ph:'e.g. KIT-2024-001'},
-  {key:'carcase',   label:'Carcase Colour',    type:'text',     ph:'e.g. White'},
+  {key:'ref',       label:'Reference / Title', type:'text',     ph:'e.g. 903452'},
+  {key:'carcase',   label:'Carcase Colour',    type:'text',     ph:'e.g. Cashmere'},
   {key:'floor',     label:'Floor Cabinets',    type:'number',   ph:'0'},
   {key:'wall',      label:'Wall Cabinets',     type:'number',   ph:'0'},
   {key:'tall',      label:'Tall Cabinets',     type:'number',   ph:'0'},
-  {key:'doorRange', label:'Door Range',        type:'text',     ph:'e.g. Shaker'},
+  {key:'doorRange', label:'Door Range',        type:'text',     ph:'e.g. H11'},
   {key:'doorColour',label:'Door Colour',       type:'text',     ph:'e.g. Ivory / RAL 9010'},
-  {key:'appliances',label:'Appliances',        type:'textarea', ph:'e.g. Oven; Hob; Extractor; Dishwasher'},
-  {key:'details',   label:'Details',           type:'textarea', ph:'Worktops, splashbacks, handles, lighting etc.'}
+  {key:'appliances',label:'Appliances',        type:'textarea', ph:'seperate with semicolon e.g.  BOSCH HHF113BA0B SINGLE OVEN; BEKO BCFD4V50 BI 50/50 FRIDGE FREEZER; ELICA ERA-LUX-SS-60 CANOPY HOOD;},
+  {key:'details',   label:'Details',           type:'textarea', ph:'Worktops, splashbacks, handles, lighting etc. Any other special information'}
 ];
 
 var LABELS = {ref:'Reference',carcase:'Carcase Colour',floor:'Floor Cabinets',wall:'Wall Cabinets',tall:'Tall Cabinets',doorRange:'Door Range',doorColour:'Door Colour',appliances:'Appliances',details:'Details'};
