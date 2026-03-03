@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kitchen Viewer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;min-height:100vh;max-width:480px;margin:0 auto}
+.screen{display:none}.screen.active{display:block}
+.home-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 20px;text-align:center}
+.home-logo{font-size:64px;margin-bottom:16px}
+.home-title{font-size:24px;font-weight:700;color:#1a56db;margin-bottom:8px}
+.home-sub{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:32px}
+.btn-scan{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;border:none;border-radius:16px;padding:18px 40px;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(26,86,219,.35);width:100%;max-width:300px}
+.scanner-header{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.scanner-header h2{font-size:16px;font-weight:700}
+.back-btn{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+.scanner-body{padding:20px}
+.video-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:1}
+video{width:100%;height:100%;object-fit:cover}
+.scan-status{text-align:center;margin-top:12px;font-size:13px;color:#64748b;min-height:20px}
+.scan-line{position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,#1a56db,transparent);animation:scan 2s linear infinite;top:50%}
+@keyframes scan{0%{top:15%}50%{top:85%}100%{top:15%}}
+.corner{position:absolute;width:24px;height:24px;border-color:#1a56db;border-style:solid;opacity:.9}
+.c-tl{top:8%;left:8%;border-width:3px 0 0 3px}
+.c-tr{top:8%;right:8%;border-width:3px 3px 0 0}
+.c-bl{bottom:8%;left:8%;border-width:0 0 3px 3px}
+.c-br{bottom:8%;right:8%;border-width:0 3px 3px 0}
+.k-header{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;padding:20px 20px 16px;position:relative}
+.k-ref{font-size:22px;font-weight:700;margin-bottom:4px}
+.k-sub{font-size:13px;opacity:.85}
+.k-scan-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;font-weight:600}
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e2e8f0}
+.tab{flex:1;padding:12px 4px;text-align:center;font-size:13px;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.active{color:#1a56db;border-bottom-color:#1a56db}
+.tab-content{display:none;padding:16px}.tab-content.active{display:block}
+.count-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.count-box{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:16px;text-align:center}
+.count-num{font-size:36px;font-weight:700;color:#1a56db}
+.count-lbl{font-size:11px;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.info-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:16px}
+.info-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.info-row:last-child{border-bottom:none}
+.info-icon{font-size:20px;width:32px;text-align:center}
+.info-label{font-size:11px;color:#94a3b8;margin-bottom:2px}
+.info-value{font-size:14px;font-weight:600;color:#1e293b}
+.appliance-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.dot{width:10px;height:10px;border-radius:50%;background:#1a56db;flex-shrink:0}
+.appliance-name{font-size:14px;color:#1e293b;font-weight:500}
+.details-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:16px;font-size:14px;color:#374151;line-height:1.7;white-space:pre-wrap}
+.empty-state{text-align:center;padding:40px 20px;color:#94a3b8}
+.empty-state .emoji{font-size:40px;margin-bottom:8px}
+.bottom-btn{padding:16px;background:#fff;border-top:1px solid #e2e8f0}
+.btn-another{width:100%;background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer}
+.err-wrap{padding:32px 20px;text-align:center}
+.err-icon{font-size:56px;margin-bottom:16px}
+.err-title{font-size:20px;font-weight:700;color:#ef4444;margin-bottom:8px}
+.err-sub{font-size:13px;color:#64748b;margin-bottom:20px}
+.debug-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:11px;color:#64748b;word-break:break-all;text-align:left;margin-bottom:20px}
+.btn-try{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer}
+</style></head>
+<body>
+<div class="screen active" id="screenHome"><div class="home-wrap"><div class="home-logo">🍳</div><div class="home-title">Kitchen Viewer</div><div class="home-sub">Scan a kitchen order QR code to view the full specification instantly.</div><button class="btn-scan" onclick="startScan()">📷 Scan QR Code</button></div></div>
+<div class="screen" id="screenScan"><div class="scanner-header"><button class="back-btn" onclick="stopScan();show('screenHome')">← Back</button><h2>Scan Kitchen QR Code</h2></div><div class="scanner-body"><div class="video-wrap"><video id="video" autoplay playsinline muted></video><div class="scan-line"></div><div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div></div><div class="scan-status" id="scanStatus">Initialising camera...</div></div></div>
+<div class="screen" id="screenKitchen"><div class="k-header"><button class="k-scan-btn" onclick="startScan()">📷 Scan</button><div class="k-ref" id="kRef"></div><div class="k-sub" id="kSub"></div></div><div class="tabs"><div class="tab active" onclick="showTab(0)">Overview</div><div class="tab" onclick="showTab(1)">Appliances</div><div class="tab" onclick="showTab(2)">Details</div></div><div class="tab-content active" id="tab0"><div class="count-row"><div class="count-box"><div class="count-num" id="cFloor">0</div><div class="count-lbl">Floor</div></div><div class="count-box"><div class="count-num" id="cWall">0</div><div class="count-lbl">Wall</div></div><div class="count-box"><div class="count-num" id="cTall">0</div><div class="count-lbl">Tall</div></div></div><div class="info-card"><div class="info-row"><div class="info-icon">🎨</div><div><div class="info-label">Carcase Colour</div><div class="info-value" id="iCarcase">—</div></div></div><div class="info-row"><div class="info-icon">🚪</div><div><div class="info-label">Door Range</div><div class="info-value" id="iDoorRange">—</div></div></div><div class="info-row"><div class="info-icon">🖌</div><div><div class="info-label">Door Colour</div><div class="info-value" id="iDoorColour">—</div></div></div></div></div><div class="tab-content" id="tab1"><div id="applianceList"></div></div><div class="tab-content" id="tab2"><div id="detailsContent"></div></div><div class="bottom-btn"><button class="btn-another" onclick="startScan()">📷 Scan Another Kitchen</button></div></div>
+<div class="screen" id="screenError"><div class="err-wrap"><div class="err-icon">⚠️</div><div class="err-title">Invalid QR Code</div><div class="err-sub">This QR code does not contain valid kitchen data.</div><div class="debug-box" id="debugBox"></div><button class="btn-try" onclick="startScan()">Try Again</button></div></div>
+<script>
+let videoStream=null,animFrame=null,frameCount=0,detector=null;
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+(function(){try{const p=new URLSearchParams(window.location.search);if(p.has("data")){displayKitchen(JSON.parse(decodeURIComponent(p.get("data"))));return;}}catch(e){}show("screenHome");})();
+async function startScan(){show("screenScan");stopScan();const vid=document.getElementById("video"),st=document.getElementById("scanStatus");try{videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});vid.srcObject=videoStream;await vid.play();st.textContent="Scanning — hold QR code steady...";if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]});}catch(e){detector=null;}}scanLoop();}catch(e){st.textContent="Camera access denied.";}}
+function stopScan(){if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null;}}
+async function scanLoop(){const vid=document.getElementById("video");frameCount++;if(vid.readyState===vid.HAVE_ENOUGH_DATA&&frameCount%3===0){if(detector){try{const r=await detector.detect(vid);if(r.length){stopScan();handleQR(r[0].rawValue);return;}}catch(e){detector=null;}}if(typeof jsQR!=="undefined"){const vw=vid.videoWidth,vh=vid.videoHeight,sz=Math.min(vw,vh);const c=document.createElement("canvas");c.width=sz;c.height=sz;const ctx=c.getContext("2d");ctx.drawImage(vid,(vw-sz)/2,(vh-sz)/2,sz,sz,0,0,sz,sz);const code=jsQR(ctx.getImageData(0,0,sz,sz).data,sz,sz,{inversionAttempts:"dontInvert"});if(code){stopScan();handleQR(code.data);return;}}}animFrame=requestAnimationFrame(scanLoop);}
+function handleQR(raw){try{displayKitchen(JSON.parse(decodeURIComponent(raw)));}catch(e){try{displayKitchen(JSON.parse(raw));}catch(e2){document.getElementById("debugBox").textContent=raw;show("screenError");}}}
+function displayKitchen(d){const n={ref:d.ref||d.Title||d.reference||"",carcase:d.carcase||d.Carcase_colour||d.Carcase_Colour||"",floor:d.floor||d.Floor_cabinets||d.Floor_Cabinets||0,wall:d.wall||d.Wall_Cabinets||d.Wall_cabinets||0,tall:d.tall||d.Tall_Cabinets||d.Tall_cabinets||0,doorRange:d.doorRange||d.Door_Range||d.Door_range||"",doorColour:d.doorColour||d.Door_Colour||d.Door_colour||"",appliances:d.appliances||d.Appliances||"",details:d.details||d.Other_Details||d.Details||""};document.getElementById("kRef").textContent=n.ref||"Kitchen Order";document.getElementById("kSub").textContent=[n.doorRange,n.doorColour].filter(Boolean).join(" · ");document.getElementById("cFloor").textContent=n.floor||0;document.getElementById("cWall").textContent=n.wall||0;document.getElementById("cTall").textContent=n.tall||0;document.getElementById("iCarcase").textContent=n.carcase||"—";document.getElementById("iDoorRange").textContent=n.doorRange||"—";document.getElementById("iDoorColour").textContent=n.doorColour||"—";const al=document.getElementById("applianceList");if(n.appliances.trim())al.innerHTML=n.appliances.split(";").map(s=>s.trim()).filter(Boolean).map(a=>'<div class="appliance-card"><div class="dot"></div><div class="appliance-name">'+a+"</div></div>").join("");else al.innerHTML='<div class="empty-state"><div class="emoji">📦</div><div>No appliances listed</div></div>';const dc=document.getElementById("detailsContent");if(n.details.trim())dc.innerHTML='<div class="details-card">'+n.details.replace(/</g,"&lt;")+"</div>";else dc.innerHTML='<div class="empty-state"><div class="emoji">📝</div><div>No additional details</div></div>';showTab(0);show("screenKitchen");}
+function showTab(i){document.querySelectorAll(".tab").forEach((t,idx)=>t.classList.toggle("active",idx===i));document.querySelectorAll(".tab-content").forEach((c,idx)=>c.classList.toggle("active",idx===i));}
+</script>
+</body></html>
