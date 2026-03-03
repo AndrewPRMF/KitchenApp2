@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Kitchen Viewer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh;max-width:480px;margin:0 auto}
+.app-header{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.app-header h1{font-size:1.05rem;font-weight:600}
+.app-header p{font-size:0.72rem;opacity:0.75;margin-top:1px}
+.scan-btn{background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:8px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.scan-btn:active{background:rgba(255,255,255,0.35)}
+.scanner-overlay{display:none;position:fixed;inset:0;background:#000;z-index:200;flex-direction:column}
+.scanner-overlay.active{display:flex}
+.scanner-top{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.5)}
+.scanner-top span{color:white;font-size:1rem;font-weight:600}
+.close-btn{background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:700;cursor:pointer}
+.video-wrap{position:relative;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
+#scanVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan-frame{position:absolute;width:260px;height:260px;z-index:10;pointer-events:none}
+.scan-frame::before{content:"";position:absolute;inset:0;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);border-radius:4px}
+.scan-corners{position:absolute;inset:0}
+.corner{position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid}
+.corner-tl{top:0;left:0;border-width:4px 0 0 4px;border-radius:6px 0 0 0}
+.corner-tr{top:0;right:0;border-width:4px 4px 0 0;border-radius:0 6px 0 0}
+.corner-bl{bottom:0;left:0;border-width:0 0 4px 4px;border-radius:0 0 0 6px}
+.corner-br{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 6px 0}
+.scan-line{position:absolute;left:4px;right:4px;height:2px;background:linear-gradient(90deg,transparent,#1a56db,transparent);animation:scanline 2s ease-in-out infinite;top:50%}
+@keyframes scanline{0%,100%{top:10%}50%{top:90%}}
+.scan-status{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:white;padding:8px 20px;border-radius:20px;font-size:0.8rem;white-space:nowrap;z-index:11}
+.scan-hint{color:rgba(255,255,255,0.7);font-size:0.8rem;text-align:center;padding:12px 20px 20px;background:rgba(0,0,0,0.5)}
+#scanCanvas{display:none}
+.home{padding:48px 24px;text-align:center}
+.home-icon{font-size:4rem;margin-bottom:16px}
+.home h2{font-size:1.2rem;font-weight:700;color:#2d3748;margin-bottom:8px}
+.home p{font-size:0.88rem;color:#718096;line-height:1.6;margin-bottom:28px}
+.home-scan-btn{background:#1a56db;color:white;border:none;border-radius:12px;padding:16px 32px;font-size:1rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(26,86,219,0.3)}
+.home-scan-btn:active{background:#1641b0}
+.kitchen-view{display:none;padding-bottom:32px}
+.order-header{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:white;padding:20px 20px 0}
+.order-label{font-size:0.72rem;font-weight:600;opacity:0.75;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px}
+.order-number{font-size:2rem;font-weight:800;letter-spacing:0.02em;line-height:1}
+.order-sub{font-size:0.8rem;opacity:0.7;margin-top:6px;padding-bottom:20px}
+.tabs{background:white;display:flex;border-bottom:2px solid #e2e8f0;position:sticky;top:57px;z-index:50}
+.tab{flex:1;padding:13px 8px;text-align:center;font-size:0.82rem;font-weight:600;color:#718096;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab.active{color:#1a56db;border-bottom-color:#1a56db}
+.tab-panel{display:none;padding:20px}
+.tab-panel.active{display:block}
+.section-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#a0aec0;margin-bottom:12px;margin-top:4px}
+.info-card{background:white;border-radius:12px;padding:4px 0;box-shadow:0 1px 8px rgba(0,0,0,0.06);margin-bottom:16px;overflow:hidden}
+.info-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #f7fafc}
+.info-row:last-child{border-bottom:none}
+.info-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-right:12px;flex-shrink:0}
+.info-label{font-size:0.72rem;color:#a0aec0;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px}
+.info-value{font-size:0.95rem;font-weight:600;color:#1a202c}
+.cabinet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.cabinet-box{background:white;border-radius:12px;padding:16px 8px;text-align:center;box-shadow:0 1px 8px rgba(0,0,0,0.06)}
+.cabinet-count{font-size:2.2rem;font-weight:800;color:#1a56db;line-height:1}
+.cabinet-label{font-size:0.7rem;font-weight:600;color:#718096;margin-top:4px;text-transform:uppercase;letter-spacing:0.04em}
+.appliance-list{display:flex;flex-direction:column;gap:10px}
+.appliance-item{background:white;border-radius:12px;padding:14px 16px;box-shadow:0 1px 8px rgba(0,0,0,0.06);display:flex;align-items:flex-start;gap:12px}
+.appliance-dot{width:8px;height:8px;background:#1a56db;border-radius:50%;flex-shrink:0;margin-top:5px}
+.appliance-text{font-size:0.92rem;color:#2d3748;font-weight:500;line-height:1.4}
+.details-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,0.06);font-size:0.92rem;color:#2d3748;line-height:1.8;white-space:pre-wrap}
+.empty-state{text-align:center;padding:40px 20px;color:#a0aec0}
+.empty-state .empty-icon{font-size:2.5rem;margin-bottom:8px}
+.empty-state p{font-size:0.85rem}
+.scan-again{margin:20px;background:white;border:2px solid #1a56db;color:#1a56db;border-radius:12px;padding:14px;font-size:0.9rem;font-weight:700;cursor:pointer;width:calc(100% - 40px);display:flex;align-items:center;justify-content:center;gap:8px}
+.scan-again:active{background:#ebf8ff}
+.error-state{padding:40px 20px;text-align:center}
+.error-state .error-icon{font-size:3rem;margin-bottom:12px}
+.error-state h3{color:#e53e3e;margin-bottom:8px}
+.error-state p{font-size:0.85rem;color:#718096;line-height:1.6;word-break:break-all}
+.debug-box{background:#1a202c;color:#68d391;border-radius:8px;padding:12px;font-family:monospace;font-size:0.72rem;margin-top:16px;text-align:left;white-space:pre-wrap;word-break:break-all;max-height:150px;overflow-y:auto}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>&#127968; Kitchen Viewer</h1>
+    <p id="headerSub">Scan a kitchen QR code</p>
+  </div>
+  <button class="scan-btn" onclick="startScan()" id="headerScanBtn" style="display:none">&#128247; Scan</button>
+</div>
+
+<div class="scanner-overlay" id="scannerOverlay">
+  <div class="scanner-top">
+    <span>&#128247; Scanning...</span>
+    <button class="close-btn" onclick="stopScan()">&#10005; Cancel</button>
+  </div>
+  <div class="video-wrap">
+    <video id="scanVideo" playsinline autoplay muted></video>
+    <div class="scan-frame">
+      <div class="scan-corners">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+      </div>
+      <div class="scan-line"></div>
+    </div>
+    <div class="scan-status" id="scanStatus">Searching for QR code...</div>
+  </div>
+  <canvas id="scanCanvas"></canvas>
+  <p class="scan-hint">Centre the QR code within the box above</p>
+</div>
+
+<div class="home" id="homeScreen">
+  <div class="home-icon">&#9724;</div>
+  <h2>Kitchen QR Viewer</h2>
+  <p>Scan any kitchen QR code to instantly view the full specification — cabinets, doors, appliances and more.</p>
+  <button class="home-scan-btn" onclick="startScan()">&#128247; Scan QR Code</button>
+</div>
+
+<div class="kitchen-view" id="kitchenView">
+  <div class="order-header">
+    <div class="order-label">Order Reference</div>
+    <div class="order-number" id="kRef">—</div>
+    <div class="order-sub" id="kSub"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview')" id="tab-overview">Overview</div>
+    <div class="tab" onclick="showTab('appliances')" id="tab-appliances">Appliances</div>
+    <div class="tab" onclick="showTab('details')" id="tab-details">Details</div>
+  </div>
+  <div class="tab-panel active" id="panel-overview">
+    <div class="section-title">Cabinet Counts</div>
+    <div class="cabinet-grid">
+      <div class="cabinet-box"><div class="cabinet-count" id="kFloor">—</div><div class="cabinet-label">Floor</div></div>
+      <div class="cabinet-box"><div class="cabinet-count" id="kWall">—</div><div class="cabinet-label">Wall</div></div>
+      <div class="cabinet-box"><div class="cabinet-count" id="kTall">—</div><div class="cabinet-label">Tall</div></div>
+    </div>
+    <div class="section-title">Specification</div>
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-icon" style="background:#ebf8ff">&#127912;</div>
+        <div><div class="info-label">Carcase Colour</div><div class="info-value" id="kCarcase">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon" style="background:#f0fff4">&#128681;</div>
+        <div><div class="info-label">Door Range</div><div class="info-value" id="kDoorRange">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon" style="background:#fffbeb">&#127775;</div>
+        <div><div class="info-label">Door Colour</div><div class="info-value" id="kDoorColour">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-appliances">
+    <div class="section-title">Appliances</div>
+    <div class="appliance-list" id="kAppliances"></div>
+  </div>
+  <div class="tab-panel" id="panel-details">
+    <div class="section-title">Details</div>
+    <div id="kDetails"></div>
+  </div>
+  <button class="scan-again" onclick="startScan()">&#128247; Scan Another Kitchen</button>
+</div>
+
+<div id="errorView" style="display:none">
+  <div class="error-state">
+    <div class="error-icon">&#10060;</div>
+    <h3>Couldn't Read QR Code</h3>
+    <p id="errorMsg">This doesn't appear to be a Kitchen QR code.</p>
+    <div id="debugBox" class="debug-box" style="display:none"></div>
+    <button class="home-scan-btn" style="margin-top:20px" onclick="showHome()">&#8592; Try Again</button>
+  </div>
+</div>
+
+<script>
+var stream=null, scanning=false, animFrame=null, frameCount=0;
+var SCAN_INTERVAL=3; // process every 3rd frame for performance
+
+function startScan(){
+  var overlay=document.getElementById('scannerOverlay');
+  overlay.classList.add('active');
+  document.getElementById('scanStatus').textContent='Starting camera...';
+  frameCount=0;
+
+  navigator.mediaDevices.getUserMedia({
+    video:{
+      facingMode:{exact:'environment'},
+      width:{ideal:1280},
+      height:{ideal:720}
+    }
+  }).then(function(s){
+    stream=s;
+    var video=document.getElementById('scanVideo');
+    video.srcObject=s;
+    video.setAttribute('playsinline','true');
+    video.play().then(function(){
+      document.getElementById('scanStatus').textContent='Searching for QR code...';
+      scanning=true;
+      tick();
+    });
+  }).catch(function(err){
+    // Fallback — try without exact facing mode
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+    .then(function(s){
+      stream=s;
+      var video=document.getElementById('scanVideo');
+      video.srcObject=s;
+      video.setAttribute('playsinline','true');
+      video.play().then(function(){
+        document.getElementById('scanStatus').textContent='Searching for QR code...';
+        scanning=true;
+        tick();
+      });
+    }).catch(function(err2){
+      stopScan();
+      alert('Camera error: '+err2.message+'\n\nPlease make sure camera permission is granted for this site in Chrome settings.');
+    });
+  });
+}
+
+function stopScan(){
+  scanning=false;
+  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
+  if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}
+  var video=document.getElementById('scanVideo');
+  video.srcObject=null;
+  document.getElementById('scannerOverlay').classList.remove('active');
+}
+
+function tick(){
+  if(!scanning)return;
+  frameCount++;
+  if(frameCount % SCAN_INTERVAL === 0) tryDecode();
+  animFrame=requestAnimationFrame(tick);
+}
+
+function tryDecode(){
+  var video=document.getElementById('scanVideo');
+  if(!video||video.readyState<2||video.videoWidth===0)return;
+
+  var canvas=document.getElementById('scanCanvas');
+  var vw=video.videoWidth, vh=video.videoHeight;
+
+  // Crop to centre square for faster decode
+  var size=Math.min(vw,vh)*0.8;
+  var sx=(vw-size)/2, sy=(vh-size)/2;
+  canvas.width=Math.round(size);
+  canvas.height=Math.round(size);
+
+  var ctx=canvas.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(video,sx,sy,size,size,0,0,canvas.width,canvas.height);
+
+  var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+
+  // Try BarcodeDetector API first (native Android Chrome — fastest)
+  if('BarcodeDetector' in window){
+    var bd=new BarcodeDetector({formats:['qr_code']});
+    bd.detect(canvas).then(function(codes){
+      if(codes.length>0){
+        stopScan();
+        processQRData(codes[0].rawValue);
+      }
+    }).catch(function(){
+      // BarcodeDetector failed, fall through to jsQR
+      tryJsQR(imageData);
+    });
+  } else {
+    tryJsQR(imageData);
+  }
+}
+
+function tryJsQR(imageData){
+  if(typeof jsQR==='undefined')return;
+  var code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'attemptBoth'});
+  if(code&&code.data){
+    stopScan();
+    processQRData(code.data);
+  }
+}
+
+function processQRData(raw){
+  try{
+    // Strip any leading/trailing whitespace or BOM characters
+    var clean=raw.trim().replace(/^﻿/,'');
+    var data=JSON.parse(clean);
+    var hasKitchenData=(data.ref||data.Title||data.carcase_colour||data.Carcase_colour);
+    if(!hasKitchenData) throw new Error('No kitchen fields found in QR data');
+    showKitchen(data);
+  }catch(e){
+    showError(raw, e.message);
+  }
+}
+
+function showKitchen(d){
+  var ref=d.ref||d.Title||'—';
+  var carcase=d.carcase_colour||d.Carcase_colour||'Not specified';
+  var floor=d.floor_cabinets!=null?d.floor_cabinets:(d.Floor_cabinets!=null?d.Floor_cabinets:'—');
+  var wall=d.wall_cabinets!=null?d.wall_cabinets:(d.Wall_Cabinets!=null?d.Wall_Cabinets:'—');
+  var tall=d.tall_cabinets!=null?d.tall_cabinets:(d.Tall_Cabinets!=null?d.Tall_Cabinets:'—');
+  var doorRange=d.door_range||d.Door_Range||'Not specified';
+  var doorColour=d.door_colour||d.Door_Colour||'Not specified';
+  var appliances=d.appliances||d.Appliances||'';
+  var details=d.other_details||d.Other_Details||'';
+
+  document.getElementById('kRef').textContent=ref;
+  document.getElementById('kSub').textContent=doorRange+' · '+doorColour;
+  document.getElementById('headerSub').textContent='Order: '+ref;
+  document.getElementById('headerScanBtn').style.display='flex';
+  document.getElementById('kFloor').textContent=floor;
+  document.getElementById('kWall').textContent=wall;
+  document.getElementById('kTall').textContent=tall;
+  document.getElementById('kCarcase').textContent=carcase;
+  document.getElementById('kDoorRange').textContent=doorRange;
+  document.getElementById('kDoorColour').textContent=doorColour;
+
+  // Appliances — split on semicolons
+  var appEl=document.getElementById('kAppliances');
+  appEl.innerHTML='';
+  if(appliances&&appliances.trim()){
+    var items=appliances.split(';').map(function(a){return a.trim();}).filter(function(a){return a.length>0;});
+    items.forEach(function(item){
+      appEl.innerHTML+='<div class="appliance-item"><div class="appliance-dot"></div><div class="appliance-text">'+escHtml(item)+'</div></div>';
+    });
+  } else {
+    appEl.innerHTML=emptyState('No appliances listed');
+  }
+
+  // Details
+  var detEl=document.getElementById('kDetails');
+  detEl.innerHTML=details&&details.trim()
+    ?'<div class="details-card">'+escHtml(details.trim())+'</div>'
+    :emptyState('No additional details');
+
+  document.getElementById('homeScreen').style.display='none';
+  document.getElementById('errorView').style.display='none';
+  document.getElementById('kitchenView').style.display='block';
+  showTab('overview');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showTab(name){
+  ['overview','appliances','details'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+    document.getElementById('panel-'+t).classList.toggle('active',t===name);
+  });
+}
+
+function showHome(){
+  document.getElementById('homeScreen').style.display='block';
+  document.getElementById('kitchenView').style.display='none';
+  document.getElementById('errorView').style.display='none';
+  document.getElementById('headerScanBtn').style.display='none';
+  document.getElementById('headerSub').textContent='Scan a kitchen QR code';
+}
+
+function showError(raw, reason){
+  document.getElementById('errorMsg').textContent='Could not read kitchen data. Reason: '+reason;
+  var db=document.getElementById('debugBox');
+  db.style.display='block';
+  db.textContent='Raw QR content:\n'+raw;
+  document.getElementById('homeScreen').style.display='none';
+  document.getElementById('kitchenView').style.display='none';
+  document.getElementById('errorView').style.display='block';
+}
+
+function emptyState(msg){
+  return '<div class="empty-state"><div class="empty-icon">&#128203;</div><p>'+msg+'</p></div>';
+}
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kitchen QR App</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
+header{background:linear-gradient(135deg,#1a56db,#0e3a8a);color:white;padding:20px 32px;display:flex;align-items:center;gap:14px}
+header h1{font-size:1.4rem;font-weight:600}
+header p{font-size:0.85rem;opacity:0.8;margin-top:2px}
+.container{max-width:820px;margin:32px auto;padding:0 16px}
+.steps{display:flex;margin-bottom:32px}
+.step{flex:1;text-align:center;position:relative}
+.step:not(:last-child)::after{content:"";position:absolute;top:18px;left:60%;width:80%;height:2px;background:#cbd5e0;z-index:0}
+.step.active:not(:last-child)::after,.step.done:not(:last-child)::after{background:#1a56db}
+.step-circle{width:36px;height:36px;border-radius:50%;background:#cbd5e0;color:white;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;position:relative;z-index:1}
+.step.active .step-circle{background:#1a56db}
+.step.done .step-circle{background:#38a169}
+.step-label{font-size:.72rem;color:#718096;font-weight:500}
+.step.active .step-label{color:#1a56db;font-weight:600}
+.card{background:white;border-radius:12px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:20px}
+.card h2{font-size:1.1rem;font-weight:600;margin-bottom:6px;color:#2d3748}
+.card p.sub{font-size:.85rem;color:#718096;margin-bottom:20px}
+.upload-zone{border:2px dashed #bee3f8;border-radius:10px;padding:40px 20px;text-align:center;cursor:pointer;background:#ebf8ff;transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:#1a56db;background:#dbeafe}
+.upload-zone p{color:#4a5568;font-size:.9rem}
+.upload-zone span{color:#1a56db;font-weight:600}
+.upload-zone .formats{font-size:.78rem;color:#a0aec0;margin-top:6px}
+#fileInput{display:none}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field.full{grid-column:1/-1}
+.field label{font-size:.78rem;font-weight:600;color:#4a5568;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field textarea{padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:.9rem;font-family:inherit;transition:border .15s}
+.field input:focus,.field textarea:focus{outline:none;border-color:#1a56db}
+.field textarea{resize:vertical;min-height:90px}
+.field .hint{font-size:.73rem;color:#a0aec0}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:3px 10px;font-size:.75rem;font-weight:600;margin-bottom:16px}
+.badge-word{background:#c6f6d5;color:#276749}
+.badge-ai{background:#fef3c7;color:#92400e}
+.badge-manual{background:#bee3f8;color:#2b6cb0}
+.btn{padding:10px 22px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.btn-primary{background:#1a56db;color:white}
+.btn-primary:hover{background:#1641b0}
+.btn-success{background:#38a169;color:white}
+.btn-success:hover{background:#2f855a}
+.btn-ghost{background:#edf2f7;color:#4a5568}
+.btn-ghost:hover{background:#e2e8f0}
+.btn-outline{background:white;color:#1a56db;border:2px solid #1a56db}
+.btn-outline:hover{background:#ebf8ff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.loading{display:flex;align-items:center;gap:10px;color:#4a5568;font-size:.9rem;padding:12px 0}
+.spinner{width:20px;height:20px;border:3px solid #bee3f8;border-top-color:#1a56db;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alert{border-radius:8px;padding:12px 16px;font-size:.875rem;margin-top:12px}
+.alert-info{background:#ebf8ff;border-left:4px solid #1a56db;color:#2b6cb0}
+.alert-success{background:#f0fff4;border-left:4px solid #38a169;color:#276749}
+.alert-error{background:#fff5f5;border-left:4px solid #e53e3e;color:#c53030}
+.alert-warn{background:#fffbeb;border-left:4px solid #d97706;color:#92400e}
+.section{display:none}
+.section.active{display:block}
+.file-preview{display:flex;align-items:center;gap:10px;background:#f7fafc;border-radius:8px;padding:10px 14px;margin-top:12px}
+.file-preview .fname{font-weight:600;font-size:.88rem}
+.file-preview .fsize{font-size:.78rem;color:#a0aec0}
+.method-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.method-card{border:2px solid #e2e8f0;border-radius:10px;padding:16px 12px;cursor:pointer;transition:all .2s;text-align:center}
+.method-card:hover,.method-card.selected{border-color:#1a56db;background:#ebf8ff}
+.method-card .icon{font-size:1.8rem;margin-bottom:6px}
+.method-card h3{font-size:.85rem;font-weight:700;color:#2d3748;margin-bottom:3px}
+.method-card p{font-size:.72rem;color:#718096}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px}
+.tag-free{background:#c6f6d5;color:#276749}
+.tag-ai{background:#fef3c7;color:#92400e}
+.tag-manual{background:#bee3f8;color:#2b6cb0}
+
+/* QR section */
+.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+#qrcode{padding:16px;background:white;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.12)}
+.ref-badge{background:#1a56db;color:white;border-radius:8px;padding:6px 20px;font-weight:700;font-size:1.1rem}
+.qr-size-note{font-size:.78rem;color:#a0aec0;margin-top:4px}
+
+/* Summary table */
+.summary-table{width:100%;border-collapse:collapse;margin-top:8px}
+.summary-table tr{border-bottom:1px solid #f0f4f8}
+.summary-table tr:last-child{border-bottom:none}
+.summary-table td{padding:8px 4px;font-size:.88rem;vertical-align:top}
+.summary-table td:first-child{font-weight:700;color:#2d3748;width:160px;padding-right:16px}
+.summary-table td:last-child{color:#4a5568;white-space:pre-wrap}
+
+/* JSON preview */
+.json-preview{background:#1a202c;color:#68d391;border-radius:8px;padding:16px;font-family:monospace;font-size:.75rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;margin-top:8px}
+.collapsible{cursor:pointer;font-size:.82rem;color:#1a56db;text-decoration:underline;margin-top:12px;display:inline-block}
+
+/* API key config */
+.cfg{background:#f7fafc;border-radius:8px;padding:14px;margin-bottom:14px;display:none}
+.cfg.visible{display:block}
+.cfg label{font-size:.8rem;font-weight:600;color:#4a5568;display:block;margin-bottom:4px}
+.cfg input{width:100%;padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem;font-family:inherit}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>&#127968; Kitchen QR Generator</h1>
+    <p>Upload a kitchen form and generate a self-contained QR code — no internet or login required</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="steps">
+    <div class="step active" id="s1"><div class="step-circle">1</div><div class="step-label">Upload / Enter</div></div>
+    <div class="step" id="s2"><div class="step-circle">2</div><div class="step-label">Review Data</div></div>
+    <div class="step" id="s3"><div class="step-circle">3</div><div class="step-label">QR Code</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="section active" id="sec1">
+    <div class="card">
+      <h2>&#128194; How are you entering data?</h2>
+      <p class="sub">Choose your input method below.</p>
+      <div class="method-cards">
+        <div class="method-card selected" id="mc-word" onclick="selectMethod('word')">
+          <div class="icon">&#128221;</div>
+          <h3>Word Form</h3>
+          <p>Upload completed .docx template</p>
+          <span class="tag tag-free">No AI needed</span>
+        </div>
+        <div class="method-card" id="mc-pdf" onclick="selectMethod('pdf')">
+          <div class="icon">&#128424;</div>
+          <h3>Scanned PDF</h3>
+          <p>Upload printed &amp; scanned form</p>
+          <span class="tag tag-ai">Uses AI</span>
+        </div>
+        <div class="method-card" id="mc-manual" onclick="selectMethod('manual')">
+          <div class="icon">&#9999;</div>
+          <h3>Type Manually</h3>
+          <p>Fill in the form directly here</p>
+          <span class="tag tag-manual">No upload</span>
+        </div>
+      </div>
+
+      <!-- Word upload -->
+      <div id="wordSection">
+        <div class="alert alert-success" style="margin-bottom:12px">&#128221; Fields are read directly from the .docx template — fast and accurate.</div>
+        <div class="upload-zone" id="dropWord" onclick="document.getElementById('fileInput').click()" ondragover="ev(event)" ondragleave="dl(event)" ondrop="dp(event)">
+          <p><span>Click to upload</span> or drag &amp; drop</p>
+          <p class="formats">Accepts: .docx (Word template only)</p>
+        </div>
+      </div>
+
+      <!-- PDF upload -->
+      <div id="pdfSection" style="display:none">
+        <div class="cfg visible" id="apiCfg">
+          <label>Claude API Key (required for PDF extraction)</label>
+          <input id="apiKey" type="password" placeholder="sk-ant-..." />
+          <div class="alert alert-info" style="margin-top:8px;font-size:.78rem">&#128274; Used only in your browser, sent directly to Anthropic. Never stored.</div>
+        </div>
+        <div class="alert alert-warn" style="margin-bottom:12px">&#128424; AI will extract handwritten or typed data from your scanned form.</div>
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()" ondragover="ev(event)" ondragleave="dl(event)" ondrop="dp(event)">
+          <p><span>Click to upload</span> or drag &amp; drop</p>
+          <p class="formats">Accepts: .pdf (scanned or photographed forms)</p>
+        </div>
+      </div>
+
+      <!-- Manual entry -->
+      <div id="manualSection" style="display:none">
+        <div class="alert alert-info" style="margin-bottom:16px">&#9999; Fill in the fields below then click Continue.</div>
+        <div class="field-grid" id="manualGrid">
+          <div class="field"><label>Reference</label><input id="m_title" placeholder="e.g. KIT-001"/><span class="hint">Unique kitchen reference code</span></div>
+          <div class="field"><label>Carcase Colour</label><input id="m_carcase" placeholder="e.g. White"/></div>
+          <div class="field"><label>Floor Cabinets</label><input id="m_floor" type="number" placeholder="0"/></div>
+          <div class="field"><label>Wall Cabinets</label><input id="m_wall" type="number" placeholder="0"/></div>
+          <div class="field"><label>Tall Cabinets</label><input id="m_tall" type="number" placeholder="0"/></div>
+          <div class="field"><label>Door Range</label><input id="m_doorRange" placeholder="e.g. Shaker"/></div>
+          <div class="field"><label>Door Colour</label><input id="m_doorColour" placeholder="e.g. Anthracite"/></div>
+          <div class="field full"><label>Appliances</label><textarea id="m_appliances" placeholder="List make, model and type of each appliance"></textarea></div>
+          <div class="field full"><label>Other Details</label><textarea id="m_other" placeholder="Worktops, splashbacks, handles, lighting etc."></textarea></div>
+        </div>
+      </div>
+
+      <input type="file" id="fileInput" accept=".docx" onchange="handleFile(event)" />
+      <div id="filePreview"></div>
+      <div id="uploadStatus"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="downloadTemplate()">&#11015; Download Word Template</button>
+        <button class="btn btn-primary" id="actionBtn" onclick="doAction()">Read Form Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Review -->
+  <div class="section" id="sec2">
+    <div class="card">
+      <h2>&#9989; Review Kitchen Data</h2>
+      <p class="sub">Check and edit all fields before generating the QR code.</p>
+      <div class="badge badge-word" id="reviewBadge">&#10003; Read from Word form</div>
+      <div class="field-grid">
+        <div class="field"><label>Reference</label><input id="f_title" placeholder="e.g. KIT-001"/><span class="hint">Unique kitchen reference code</span></div>
+        <div class="field"><label>Carcase Colour</label><input id="f_carcase" placeholder="e.g. White"/></div>
+        <div class="field"><label>Floor Cabinets</label><input id="f_floor" type="number" placeholder="0"/></div>
+        <div class="field"><label>Wall Cabinets</label><input id="f_wall" type="number" placeholder="0"/></div>
+        <div class="field"><label>Tall Cabinets</label><input id="f_tall" type="number" placeholder="0"/></div>
+        <div class="field"><label>Door Range</label><input id="f_doorRange" placeholder="e.g. Shaker"/></div>
+        <div class="field"><label>Door Colour</label><input id="f_doorColour" placeholder="e.g. Anthracite"/></div>
+        <div class="field full"><label>Appliances</label><textarea id="f_appliances" placeholder="List make, model and type of each appliance"></textarea></div>
+        <div class="field full"><label>Other Details</label><textarea id="f_other" placeholder="Worktops, splashbacks, handles, lighting etc."></textarea></div>
+      </div>
+      <div id="reviewStatus"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goTo(1)">&#8592; Back</button>
+        <button class="btn btn-success" onclick="generateQR()">&#9726; Generate QR Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: QR -->
+  <div class="section" id="sec3">
+    <div class="card" style="text-align:center">
+      <h2>&#127881; QR Code Generated!</h2>
+      <p class="sub">All kitchen data is encoded directly in this QR code — no internet needed to generate or scan.</p>
+      <div class="qr-wrap">
+        <div class="ref-badge" id="qrRef"></div>
+        <div id="qrcode"></div>
+        <p class="qr-size-note" id="qrSizeNote"></p>
+      </div>
+      <div class="btn-row" style="justify-content:center;margin-top:24px">
+        <button class="btn btn-outline" onclick="printQR()">&#128424; Print QR Code</button>
+        <button class="btn btn-ghost" onclick="saveQRImage()">&#128190; Save as Image</button>
+        <button class="btn btn-primary" onclick="resetApp()">&#10133; New Kitchen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>&#128203; Kitchen Summary</h2>
+      <table class="summary-table" id="summaryTable"></table>
+      <span class="collapsible" onclick="toggleJson()">&#9660; View encoded JSON data</span>
+      <div id="jsonPreview" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var uploadedFile=null, currentMethod='word', currentData={};
+
+var HINTS=[
+  "Unique kitchen identifier e.g. KIT-2024-001","e.g. White / Ivory / Grey",
+  "Number of base/floor units","Number of wall-mounted units","Number of larder/tower units",
+  "e.g. Shaker / Handleless / Slab","e.g. Anthracite / RAL 7016",
+  "List make, model and type of each appliance","Worktops, splashbacks, handles, lighting etc.",
+  "Quality Management System"
+];
+function isHint(s){ if(!s||!s.trim())return true; for(var i=0;i<HINTS.length;i++){if(s.trim()===HINTS[i]||s.trim().indexOf(HINTS[i])===0)return true;} return false; }
+
+function goTo(n){
+  document.querySelectorAll('.section').forEach(function(s,i){s.classList.toggle('active',i===n-1);});
+  document.querySelectorAll('.step').forEach(function(s,i){s.classList.remove('active','done');if(i<n-1)s.classList.add('done');if(i===n-1)s.classList.add('active');});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectMethod(m){
+  currentMethod=m;
+  ['word','pdf','manual'].forEach(function(x){
+    document.getElementById('mc-'+x).classList.toggle('selected',x===m);
+    document.getElementById(x+'Section').style.display=x===m?'block':'none';
+  });
+  var btn=document.getElementById('actionBtn');
+  if(m==='word'){btn.textContent='Read Form Data';btn.disabled=true;document.getElementById('fileInput').accept='.docx';}
+  else if(m==='pdf'){btn.textContent='Extract with AI';btn.disabled=true;document.getElementById('fileInput').accept='.pdf';}
+  else{btn.textContent='Continue';btn.disabled=false;}
+  uploadedFile=null;
+  document.getElementById('filePreview').innerHTML='';
+  document.getElementById('uploadStatus').innerHTML='';
+}
+
+function ev(e){e.preventDefault();e.currentTarget.classList.add('drag');}
+function dl(e){e.currentTarget.classList.remove('drag');}
+function dp(e){e.preventDefault();e.currentTarget.classList.remove('drag');var f=e.dataTransfer.files[0];if(f)handleFileObj(f);}
+function handleFile(e){if(e.target.files[0])handleFileObj(e.target.files[0]);}
+function handleFileObj(f){
+  var ok=(currentMethod==='word'&&f.name.endsWith('.docx'))||(currentMethod==='pdf'&&f.name.endsWith('.pdf'));
+  if(!ok){setStatus('uploadStatus','error','Wrong file type for this mode.');return;}
+  uploadedFile=f;
+  document.getElementById('filePreview').innerHTML='<div class="file-preview"><div><div class="fname">'+f.name+'</div><div class="fsize">'+( f.size/1024).toFixed(1)+' KB</div></div></div>';
+  document.getElementById('actionBtn').disabled=false;
+  setStatus('uploadStatus','info','File ready: '+f.name);
+}
+
+function doAction(){
+  if(currentMethod==='word') readWordForm();
+  else if(currentMethod==='pdf') extractWithAI();
+  else manualContinue();
+}
+
+function readWordForm(){
+  setStatus('uploadStatus','loading','Reading Word form fields...');
+  document.getElementById('actionBtn').disabled=true;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    JSZip.loadAsync(e.target.result).then(function(zip){
+      return zip.file('word/document.xml').async('string');
+    }).then(function(xmlStr){
+      var xml=(new DOMParser()).parseFromString(xmlStr,'application/xml');
+      var data={};
+      var known=['Title','Carcase_colour','Floor_cabinets','Wall_Cabinets','Tall_Cabinets','Door_Range','Door_Colour','Appliances','Other_Details'];
+      xml.querySelectorAll('sdt').forEach(function(sdt){
+        var tagEl=sdt.querySelector('tag'), aliasEl=sdt.querySelector('alias');
+        var key=(tagEl&&tagEl.getAttribute('w:val'))||(aliasEl&&aliasEl.getAttribute('w:val'))||null;
+        if(!key||known.indexOf(key)===-1)return;
+        if(sdt.querySelector('showingPlcHdr')){data[key]='';return;}
+        var val=Array.from(sdt.querySelectorAll('sdtContent t')).map(function(t){return t.textContent;}).join('').trim();
+        data[key]=isHint(val)?'':val;
+      });
+      populateReview(data,'word');
+      goTo(2);
+    }).catch(function(err){
+      setStatus('uploadStatus','error','Could not read Word file: '+err.message);
+      document.getElementById('actionBtn').disabled=false;
+    });
+  };
+  reader.readAsArrayBuffer(uploadedFile);
+}
+
+function extractWithAI(){
+  var apiKey=document.getElementById('apiKey').value.trim();
+  if(!apiKey){setStatus('uploadStatus','error','Please enter your Claude API key.');return;}
+  setStatus('uploadStatus','loading','Extracting data with AI — this may take a moment...');
+  document.getElementById('actionBtn').disabled=true;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var bytes=new Uint8Array(e.target.result), bin='';
+    for(var i=0;i<bytes.byteLength;i++) bin+=String.fromCharCode(bytes[i]);
+    var b64=btoa(bin);
+    fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Extract kitchen form fields. Return ONLY a valid JSON object with these exact keys: Title, Carcase_colour, Floor_cabinets (integer or null), Wall_Cabinets (integer or null), Tall_Cabinets (integer or null), Door_Range, Door_Colour, Appliances, Other_Details. Preserve line breaks in multi-line fields using \\n. No markdown, no explanation.',
+        messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:'Extract all kitchen information form fields from this document.'}]}]})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.error)throw new Error(d.error.message);
+      var raw=d.content.map(function(c){return c.text||'';}).join('');
+      var parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+      populateReview(parsed,'ai');
+      goTo(2);
+    }).catch(function(err){
+      setStatus('uploadStatus','error','AI extraction failed: '+err.message);
+      document.getElementById('actionBtn').disabled=false;
+    });
+  };
+  reader.readAsArrayBuffer(uploadedFile);
+}
+
+function manualContinue(){
+  var data={
+    Title:document.getElementById('m_title').value,
+    Carcase_colour:document.getElementById('m_carcase').value,
+    Floor_cabinets:document.getElementById('m_floor').value,
+    Wall_Cabinets:document.getElementById('m_wall').value,
+    Tall_Cabinets:document.getElementById('m_tall').value,
+    Door_Range:document.getElementById('m_doorRange').value,
+    Door_Colour:document.getElementById('m_doorColour').value,
+    Appliances:document.getElementById('m_appliances').value,
+    Other_Details:document.getElementById('m_other').value
+  };
+  populateReview(data,'manual');
+  goTo(2);
+}
+
+function populateReview(d,source){
+  document.getElementById('f_title').value=d.Title||'';
+  document.getElementById('f_carcase').value=d.Carcase_colour||'';
+  document.getElementById('f_floor').value=(d.Floor_cabinets!=null&&d.Floor_cabinets!=='')?d.Floor_cabinets:'';
+  document.getElementById('f_wall').value=(d.Wall_Cabinets!=null&&d.Wall_Cabinets!=='')?d.Wall_Cabinets:'';
+  document.getElementById('f_tall').value=(d.Tall_Cabinets!=null&&d.Tall_Cabinets!=='')?d.Tall_Cabinets:'';
+  document.getElementById('f_doorRange').value=d.Door_Range||'';
+  document.getElementById('f_doorColour').value=d.Door_Colour||'';
+  document.getElementById('f_appliances').value=d.Appliances||'';
+  document.getElementById('f_other').value=d.Other_Details||'';
+  var b=document.getElementById('reviewBadge');
+  var badges={word:['badge-word','&#10003; Read from Word form'],ai:['badge-ai','&#10024; AI extracted — please verify'],manual:['badge-manual','&#9999; Manually entered']};
+  b.className='badge '+badges[source][0]; b.innerHTML=badges[source][1];
+}
+
+function generateQR(){
+  var data={
+    ref: document.getElementById('f_title').value,
+    carcase_colour: document.getElementById('f_carcase').value,
+    floor_cabinets: parseInt(document.getElementById('f_floor').value)||0,
+    wall_cabinets: parseInt(document.getElementById('f_wall').value)||0,
+    tall_cabinets: parseInt(document.getElementById('f_tall').value)||0,
+    door_range: document.getElementById('f_doorRange').value,
+    door_colour: document.getElementById('f_doorColour').value,
+    appliances: document.getElementById('f_appliances').value,
+    other_details: document.getElementById('f_other').value
+  };
+  currentData=data;
+  var json=JSON.stringify(data);
+  var bytes=new TextEncoder().encode(json).length;
+
+  document.getElementById('qrRef').textContent=data.ref||'Kitchen';
+  document.getElementById('qrcode').innerHTML='';
+
+  // Use high error correction (H) for reliability, fall back to lower if too much data
+  var ecLevel='H';
+  if(bytes>800) ecLevel='Q';
+  if(bytes>1200) ecLevel='M';
+  if(bytes>1800) ecLevel='L';
+
+  new QRCode(document.getElementById('qrcode'),{
+    text: json,
+    width: 280,
+    height: 280,
+    colorDark: '#1a202c',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel[ecLevel]
+  });
+
+  document.getElementById('qrSizeNote').textContent='Data size: '+bytes+' bytes · Error correction: '+ecLevel+' · Scannable with any QR reader';
+
+  // Summary table
+  var labels=[['ref','Reference'],['carcase_colour','Carcase Colour'],['floor_cabinets','Floor Cabinets'],['wall_cabinets','Wall Cabinets'],['tall_cabinets','Tall Cabinets'],['door_range','Door Range'],['door_colour','Door Colour'],['appliances','Appliances'],['other_details','Other Details']];
+  document.getElementById('summaryTable').innerHTML=labels.filter(function(r){return data[r[0]]!==null&&data[r[0]]!==undefined&&data[r[0]]!=='';}).map(function(r){return '<tr><td>'+r[1]+'</td><td>'+String(data[r[0]]).replace(/\n/g,'<br>')+'</td></tr>';}).join('');
+
+  // JSON preview
+  document.getElementById('jsonPreview').innerHTML='<div class="json-preview">'+JSON.stringify(data,null,2)+'</div>';
+
+  goTo(3);
+}
+
+function toggleJson(){
+  var p=document.getElementById('jsonPreview');
+  var c=document.querySelector('.collapsible');
+  var hidden=p.style.display==='none';
+  p.style.display=hidden?'block':'none';
+  c.textContent=(hidden?'&#9650;':'&#9660;')+' '+(hidden?'Hide':'View')+' encoded JSON data';
+}
+
+function printQR(){
+  var ref=document.getElementById('qrRef').textContent;
+  var qr=document.getElementById('qrcode').innerHTML;
+  var note=document.getElementById('qrSizeNote').textContent;
+  var rows='';
+  var labels=[['ref','Reference'],['carcase_colour','Carcase Colour'],['floor_cabinets','Floor Cabinets'],['wall_cabinets','Wall Cabinets'],['tall_cabinets','Tall Cabinets'],['door_range','Door Range'],['door_colour','Door Colour'],['appliances','Appliances'],['other_details','Other Details']];
+  labels.forEach(function(l){if(currentData[l[0]]!==undefined&&currentData[l[0]]!==''&&currentData[l[0]]!==null)rows+='<tr><td style="font-weight:700;padding:4px 12px 4px 0;vertical-align:top;color:#2d3748;white-space:nowrap">'+l[1]+'</td><td style="padding:4px 0;color:#4a5568;white-space:pre-wrap">'+String(currentData[l[0]])+'</td></tr>';});
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>Kitchen QR: '+ref+'</title><style>body{font-family:Segoe UI,sans-serif;padding:32px;max-width:600px;margin:0 auto}h2{color:#1a56db;margin-bottom:4px}p{color:#718096;font-size:12px;margin-bottom:20px}.qr-wrap{text-align:center;margin-bottom:24px}table{border-collapse:collapse;width:100%}td{font-size:13px;border-bottom:1px solid #f0f4f8;padding:6px 0}</style></head><body><h2>Kitchen Reference: '+ref+'</h2><p>Scan QR code to view all kitchen details &bull; '+note+'</p><div class="qr-wrap">'+qr+'</div><table>'+rows+'</table><script>window.onload=function(){window.print();}</sc'+'ript></body></html>');
+  w.document.close();
+}
+
+function saveQRImage(){
+  var canvas=document.querySelector('#qrcode canvas');
+  if(!canvas){setStatus('reviewStatus','error','Canvas not found — try a different browser.');return;}
+  var a=document.createElement('a');
+  a.download='Kitchen_QR_'+(currentData.ref||'code')+'.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+}
+
+function downloadTemplate(){
+  var fields=[
+    {tag:'Title',label:'Reference / Code',hint:'Unique kitchen identifier e.g. KIT-2024-001'},
+    {tag:'Carcase_colour',label:'Carcase Colour',hint:'e.g. White / Ivory / Grey'},
+    {tag:'Floor_cabinets',label:'Floor Cabinets',hint:'Number of base/floor units'},
+    {tag:'Wall_Cabinets',label:'Wall Cabinets',hint:'Number of wall-mounted units'},
+    {tag:'Tall_Cabinets',label:'Tall Cabinets',hint:'Number of larder/tower units'},
+    {tag:'Door_Range',label:'Door Range',hint:'e.g. Shaker / Handleless / Slab'},
+    {tag:'Door_Colour',label:'Door Colour',hint:'e.g. Anthracite / RAL 7016'},
+    {tag:'Appliances',label:'Appliances',hint:'List make, model and type of each appliance'},
+    {tag:'Other_Details',label:'Other Details',hint:'Worktops, splashbacks, handles, lighting etc.'}
+  ];
+  var bodyXml='';
+  fields.forEach(function(f){
+    bodyXml+='<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t>'+f.label+'</w:t></w:r></w:p>';
+    bodyXml+='<w:sdt><w:sdtPr><w:alias w:val="'+f.tag+'"/><w:tag w:val="'+f.tag+'"/><w:showingPlcHdr/><w:text/></w:sdtPr>';
+    bodyXml+='<w:sdtContent><w:p><w:r><w:rPr><w:rStyle w:val="PlaceholderText"/></w:rPr><w:t>'+f.hint+'</w:t></w:r></w:p></w:sdtContent></w:sdt>';
+    bodyXml+='<w:p/>';
+  });
+  var docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>Kitchen Information Form</w:t></w:r></w:p><w:p><w:r><w:rPr><w:color w:val="718096"/></w:rPr><w:t>Click each grey field and type to replace it. Save the file then upload to the Kitchen QR App.</w:t></w:r></w:p><w:p/>'+bodyXml+'<w:sectPr/></w:body></w:document>';
+  var styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:sz w:val="24"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:sz w:val="52"/><w:color w:val="1a56db"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="2d3748"/></w:rPr></w:style><w:style w:type="character" w:styleId="PlaceholderText"><w:name w:val="Placeholder Text"/><w:rPr><w:color w:val="AAAAAA"/></w:rPr></w:style></w:styles>';
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  var rootRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  var wordRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  var zip=new JSZip();
+  zip.file('[Content_Types].xml',ct);
+  zip.file('_rels/.rels',rootRels);
+  zip.file('word/document.xml',docXml);
+  zip.file('word/styles.xml',styles);
+  zip.file('word/_rels/document.xml.rels',wordRels);
+  zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}).then(function(blob){
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Kitchen_Information_Form.docx';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  });
+}
+
+function resetApp(){
+  uploadedFile=null;currentData={};
+  document.getElementById('filePreview').innerHTML='';
+  document.getElementById('uploadStatus').innerHTML='';
+  document.getElementById('actionBtn').disabled=true;
+  document.getElementById('fileInput').value='';
+  selectMethod('word');
+  goTo(1);
+}
+
+function setStatus(id,type,msg){
+  var el=document.getElementById(id);
+  if(type==='loading'){el.innerHTML='<div class="loading"><div class="spinner"></div>'+msg+'</div>';}
+  else{el.innerHTML='<div class="alert alert-'+(type==='error'?'error':type==='success'?'success':type==='warn'?'warn':'info')+'">'+msg+'</div>';}
+}
+</script>
+</body>
+</html>
